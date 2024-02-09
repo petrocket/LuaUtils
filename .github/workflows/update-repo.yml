@@ -30,8 +30,8 @@ jobs:
           lfs: true
           fetch-depth: 0
 
-      - name: Get gem name and version 
-        id: vars
+      - name: Read gem.json
+        id: gem_json 
         run: |
           # assumes gem.json in root
           content=`cat ./repo/gem.json`
@@ -40,8 +40,13 @@ jobs:
           content="${content//$'\n'/'%0A'}"
           content="${content//$'\r'/'%0D'}"
           # end of optional handling for multi line json
-          echo "::set-output name=version::fromJson($content).version"
-          echo "::set-output name=name::fromJson($content).name"
+          echo "::set-output name=content::fromJson($content)}}"
+
+      - name: Get gem name and version 
+        id: vars
+        run: |
+          echo "::set-output name=version::${{steps.gem_json.output.content.version}}"
+          echo "::set-output name=name::${{steps.gem_json.output.content.gem_name}}"
 
 
       # pull LFS files maybe not needed if lfs:true works above
@@ -72,7 +77,7 @@ jobs:
       - name: Update repo.json
         id: archive
         run: |
-          o3de/scripts/o3de.sh edit-repo-properties --repo-path $GITHUB_WORKSPACE/repo --add-gem repo --release-archive-path artifacts --download-prefix ${{github.server_url}}/${{github.repository}}/releases/download/${{steps.vars.outputs.version}}
+          o3de/scripts/o3de.sh edit-repo-properties --repo-path ${{github.workspace}}/repo --add-gem ${{github.workspace}}/repo --release-archive-path artifacts --download-prefix ${{github.server_url}}/${{github.repository}}/releases/download/${{steps.vars.outputs.version}}
 
       - name: Commit repo.json Changes
         run: |
