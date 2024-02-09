@@ -1,0 +1,13 @@
+# visual code
+.vs/
+.vscode/
+
+# mac
+.DS_Store
+
+# maya
+*.swatches
+.mayaSwatches/
+
+# ignore vim undo files
+*.un~

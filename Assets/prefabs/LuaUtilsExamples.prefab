@@ -1,0 +1,370 @@
+{
+    "ContainerEntity": {
+        "Id": "ContainerEntity",
+        "Name": "LuaUtilsExamples",
+        "Components": {
+            "EditorDisabledCompositionComponent": {
+                "$type": "EditorDisabledCompositionComponent",
+                "Id": 145970574731375424
+            },
+            "EditorEntityIconComponent": {
+                "$type": "EditorEntityIconComponent",
+                "Id": 10379678153436121173
+            },
+            "EditorEntitySortComponent": {
+                "$type": "EditorEntitySortComponent",
+                "Id": 18356859953174772409,
+                "Child Entity Order": [
+                    "Entity_[435993622941]"
+                ]
+            },
+            "EditorInspectorComponent": {
+                "$type": "EditorInspectorComponent",
+                "Id": 2589267254323709639
+            },
+            "EditorLockComponent": {
+                "$type": "EditorLockComponent",
+                "Id": 10874092216266320109
+            },
+            "EditorOnlyEntityComponent": {
+                "$type": "EditorOnlyEntityComponent",
+                "Id": 5903181712993988962
+            },
+            "EditorPendingCompositionComponent": {
+                "$type": "EditorPendingCompositionComponent",
+                "Id": 5186976424335329383
+            },
+            "EditorPrefabComponent": {
+                "$type": "EditorPrefabComponent",
+                "Id": 11105309695913437905
+            },
+            "EditorVisibilityComponent": {
+                "$type": "EditorVisibilityComponent",
+                "Id": 5505002414269781174
+            },
+            "TransformComponent": {
+                "$type": "{27F1E1A1-8D9D-4C3B-BD3A-AFB9762449C0} TransformComponent",
+                "Id": 7578235870412033437,
+                "Parent Entity": ""
+            }
+        }
+    },
+    "Entities": {
+        "Entity_[418813753757]": {
+            "Id": "Entity_[418813753757]",
+            "Name": "StateMachineExample",
+            "Components": {
+                "EditorCommentComponent": {
+                    "$type": "EditorCommentComponent",
+                    "Id": 1266974549833349504,
+                    "Configuration": "StateMachine.lua provides a state machine object for managing named states and transitions between states."
+                },
+                "EditorDisabledCompositionComponent": {
+                    "$type": "EditorDisabledCompositionComponent",
+                    "Id": 11773616977297705574,
+                    "DisabledComponents": {
+                        "ScriptEditorComponent": {
+                            "$type": "ScriptEditorComponent",
+                            "Id": 15433875085168329752
+                        }
+                    }
+                },
+                "EditorEntityIconComponent": {
+                    "$type": "EditorEntityIconComponent",
+                    "Id": 382483644915755576
+                },
+                "EditorEntitySortComponent": {
+                    "$type": "EditorEntitySortComponent",
+                    "Id": 6901261419994334848
+                },
+                "EditorInspectorComponent": {
+                    "$type": "EditorInspectorComponent",
+                    "Id": 7297948656841301804
+                },
+                "EditorLockComponent": {
+                    "$type": "EditorLockComponent",
+                    "Id": 3524884953688352974
+                },
+                "EditorOnlyEntityComponent": {
+                    "$type": "EditorOnlyEntityComponent",
+                    "Id": 3344940245817629496
+                },
+                "EditorPendingCompositionComponent": {
+                    "$type": "EditorPendingCompositionComponent",
+                    "Id": 3068416921071511445
+                },
+                "EditorVisibilityComponent": {
+                    "$type": "EditorVisibilityComponent",
+                    "Id": 18077551766981268285
+                },
+                "TransformComponent": {
+                    "$type": "{27F1E1A1-8D9D-4C3B-BD3A-AFB9762449C0} TransformComponent",
+                    "Id": 8828519432099545138,
+                    "Parent Entity": "Entity_[435993622941]"
+                }
+            }
+        },
+        "Entity_[423108721053]": {
+            "Id": "Entity_[423108721053]",
+            "Name": "EventsExample",
+            "Components": {
+                "EditorCommentComponent": {
+                    "$type": "EditorCommentComponent",
+                    "Id": 10645369068392239735,
+                    "Configuration": "Events.lua provides a way to send and receive named events.\n"
+                },
+                "EditorDisabledCompositionComponent": {
+                    "$type": "EditorDisabledCompositionComponent",
+                    "Id": 1851136724475570620,
+                    "DisabledComponents": {
+                        "ScriptEditorComponent": {
+                            "$type": "ScriptEditorComponent",
+                            "Id": 17089077399967610050
+                        }
+                    }
+                },
+                "EditorEntityIconComponent": {
+                    "$type": "EditorEntityIconComponent",
+                    "Id": 13312776627526953585
+                },
+                "EditorEntitySortComponent": {
+                    "$type": "EditorEntitySortComponent",
+                    "Id": 17468107628714797176
+                },
+                "EditorInspectorComponent": {
+                    "$type": "EditorInspectorComponent",
+                    "Id": 17522437933772235572
+                },
+                "EditorLockComponent": {
+                    "$type": "EditorLockComponent",
+                    "Id": 187904556661438255
+                },
+                "EditorOnlyEntityComponent": {
+                    "$type": "EditorOnlyEntityComponent",
+                    "Id": 3545999363043769340
+                },
+                "EditorPendingCompositionComponent": {
+                    "$type": "EditorPendingCompositionComponent",
+                    "Id": 12166474087284730459
+                },
+                "EditorVisibilityComponent": {
+                    "$type": "EditorVisibilityComponent",
+                    "Id": 6403680410755301741
+                },
+                "TransformComponent": {
+                    "$type": "{27F1E1A1-8D9D-4C3B-BD3A-AFB9762449C0} TransformComponent",
+                    "Id": 5519237124806372364,
+                    "Parent Entity": "Entity_[435993622941]"
+                }
+            }
+        },
+        "Entity_[427403688349]": {
+            "Id": "Entity_[427403688349]",
+            "Name": "UtilitiesExample",
+            "Components": {
+                "EditorCommentComponent": {
+                    "$type": "EditorCommentComponent",
+                    "Id": 7869183840900180145,
+                    "Configuration": "Utilities.lua provides misc functions for common useful functionality:\n- Debug logging\n- Input event binding/unbinding\n- Run callback functions on next tick\n- Run callbacks when a group of entities finishes activating\n...and more to be listed here\n\n"
+                },
+                "EditorDisabledCompositionComponent": {
+                    "$type": "EditorDisabledCompositionComponent",
+                    "Id": 13919072173680225980,
+                    "DisabledComponents": {
+                        "ScriptEditorComponent": {
+                            "$type": "ScriptEditorComponent",
+                            "Id": 18398993155766746963
+                        }
+                    }
+                },
+                "EditorEntityIconComponent": {
+                    "$type": "EditorEntityIconComponent",
+                    "Id": 777061086358094700
+                },
+                "EditorEntitySortComponent": {
+                    "$type": "EditorEntitySortComponent",
+                    "Id": 7175748835034602521
+                },
+                "EditorInspectorComponent": {
+                    "$type": "EditorInspectorComponent",
+                    "Id": 9330088473431161565
+                },
+                "EditorLockComponent": {
+                    "$type": "EditorLockComponent",
+                    "Id": 3862667012491141635
+                },
+                "EditorOnlyEntityComponent": {
+                    "$type": "EditorOnlyEntityComponent",
+                    "Id": 16109954324502894403
+                },
+                "EditorPendingCompositionComponent": {
+                    "$type": "EditorPendingCompositionComponent",
+                    "Id": 48183852337272938
+                },
+                "EditorVisibilityComponent": {
+                    "$type": "EditorVisibilityComponent",
+                    "Id": 3167745201264153352
+                },
+                "TransformComponent": {
+                    "$type": "{27F1E1A1-8D9D-4C3B-BD3A-AFB9762449C0} TransformComponent",
+                    "Id": 5079413493448356984,
+                    "Parent Entity": "Entity_[435993622941]"
+                }
+            }
+        },
+        "Entity_[431698655645]": {
+            "Id": "Entity_[431698655645]",
+            "Name": "PlayerControllerExample",
+            "Components": {
+                "EditorCommentComponent": {
+                    "$type": "EditorCommentComponent",
+                    "Id": 11053698862601013460,
+                    "Configuration": "PlayerController.lua provides a generic player controller."
+                },
+                "EditorDebugDrawTextComponent": {
+                    "$type": "EditorDebugDrawTextComponent",
+                    "Id": 14572798082302606582,
+                    "Element": {
+                        "Text": "PlayerControllerExample",
+                        "DrawMode": 1,
+                        "TargetEntity": ""
+                    },
+                    "Settings": {
+                        "VisibleInGame": false
+                    }
+                },
+                "EditorDisabledCompositionComponent": {
+                    "$type": "EditorDisabledCompositionComponent",
+                    "Id": 3606973001347704136,
+                    "DisabledComponents": {
+                        "ScriptEditorComponent": {
+                            "$type": "ScriptEditorComponent",
+                            "Id": 17374284078792919537
+                        }
+                    }
+                },
+                "EditorEntityIconComponent": {
+                    "$type": "EditorEntityIconComponent",
+                    "Id": 13396429285016447277
+                },
+                "EditorEntitySortComponent": {
+                    "$type": "EditorEntitySortComponent",
+                    "Id": 9493304498087860134
+                },
+                "EditorInspectorComponent": {
+                    "$type": "EditorInspectorComponent",
+                    "Id": 10196666153566953897
+                },
+                "EditorLockComponent": {
+                    "$type": "EditorLockComponent",
+                    "Id": 7133335058047273466
+                },
+                "EditorOnlyEntityComponent": {
+                    "$type": "EditorOnlyEntityComponent",
+                    "Id": 5363567835855752881
+                },
+                "EditorPendingCompositionComponent": {
+                    "$type": "EditorPendingCompositionComponent",
+                    "Id": 6912352411210503009
+                },
+                "EditorVisibilityComponent": {
+                    "$type": "EditorVisibilityComponent",
+                    "Id": 11695701241397887371
+                },
+                "TransformComponent": {
+                    "$type": "{27F1E1A1-8D9D-4C3B-BD3A-AFB9762449C0} TransformComponent",
+                    "Id": 14303002662517710647,
+                    "Parent Entity": "Entity_[435993622941]"
+                }
+            }
+        },
+        "Entity_[435993622941]": {
+            "Id": "Entity_[435993622941]",
+            "Name": "LuaUtilsExamples",
+            "Components": {
+                "EditorDisabledCompositionComponent": {
+                    "$type": "EditorDisabledCompositionComponent",
+                    "Id": 15694559864160204462
+                },
+                "EditorEntityIconComponent": {
+                    "$type": "EditorEntityIconComponent",
+                    "Id": 6022484475418643168
+                },
+                "EditorEntitySortComponent": {
+                    "$type": "EditorEntitySortComponent",
+                    "Id": 17844855337665037292,
+                    "Child Entity Order": [
+                        "Entity_[423108721053]",
+                        "Entity_[427403688349]",
+                        "Entity_[418813753757]",
+                        "Entity_[431698655645]"
+                    ]
+                },
+                "EditorInspectorComponent": {
+                    "$type": "EditorInspectorComponent",
+                    "Id": 18329142122082531177,
+                    "ComponentOrderEntryArray": [
+                        {
+                            "ComponentId": 4665924426919858086
+                        },
+                        {
+                            "ComponentId": 7665321032414308445,
+                            "SortIndex": 1
+                        }
+                    ]
+                },
+                "EditorLockComponent": {
+                    "$type": "EditorLockComponent",
+                    "Id": 6855531012859470949
+                },
+                "EditorOnlyEntityComponent": {
+                    "$type": "EditorOnlyEntityComponent",
+                    "Id": 13786186149913466663
+                },
+                "EditorPendingCompositionComponent": {
+                    "$type": "EditorPendingCompositionComponent",
+                    "Id": 452644304364595115
+                },
+                "EditorVisibilityComponent": {
+                    "$type": "EditorVisibilityComponent",
+                    "Id": 16712050150736389708
+                },
+                "ScriptEditorComponent": {
+                    "$type": "ScriptEditorComponent",
+                    "Id": 7665321032414308445,
+                    "ScriptComponent": {
+                        "Properties": {
+                            "Properties": [
+                                {
+                                    "$type": "AzFramework::ScriptPropertyBoolean",
+                                    "id": 1822771111,
+                                    "name": "Debug",
+                                    "value": true
+                                }
+                            ]
+                        },
+                        "Script": {
+                            "assetId": {
+                                "guid": "{E2FBD468-2A58-511A-9C07-A22F7D50D0FD}",
+                                "subId": 1
+                            },
+                            "assetHint": "scripts/example.luac"
+                        }
+                    },
+                    "ScriptAsset": {
+                        "assetId": {
+                            "guid": "{E2FBD468-2A58-511A-9C07-A22F7D50D0FD}",
+                            "subId": 1
+                        },
+                        "assetHint": "scripts/example.luac"
+                    }
+                },
+                "TransformComponent": {
+                    "$type": "{27F1E1A1-8D9D-4C3B-BD3A-AFB9762449C0} TransformComponent",
+                    "Id": 4665924426919858086,
+                    "Parent Entity": "ContainerEntity"
+                }
+            }
+        }
+    }
+}

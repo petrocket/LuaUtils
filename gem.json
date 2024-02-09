@@ -1,0 +1,33 @@
+{
+    "gem_name": "LuaUtils",
+    "version": "1.0.0",
+    "display_name": "Lua Utils",
+    "license": "Apache 2.0",
+    "license_url": "",
+    "origin": "petrocket",
+    "origin_url": "https://github.com/petrocket/luautils",
+    "type": "Asset",
+    "summary": "Lua utility libraries for O3DE",
+    "canonical_tags": [
+        "Gem"
+    ],
+    "user_tags": [
+        "Lua",
+        "LuaUtils",
+        "Scripting"
+    ],
+    "platforms": [
+        "Windows",
+        "Linux",
+        "iOS",
+        "Android"
+    ],
+    "icon_path": "",
+    "requirements": "",
+    "documentation_url": "https://github.com/petrocket/luautils",
+    "dependencies": [],
+    "repo_uri": "https://github.com/petrocket/luautils",
+    "compatible_engines": [],
+    "engine_api_dependencies": [],
+    "restricted": "LuaUtils"
+}
