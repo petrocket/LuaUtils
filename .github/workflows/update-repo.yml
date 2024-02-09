@@ -1,0 +1,98 @@
+# This automation updates the repo.json when a gem.json file is changed
+
+name: Update remote repository 
+
+on:
+  # Allows you to run this workflow manually from the Actions tag
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+    paths:
+      - '**gem.json'
+        
+run-name: Updating repo.json
+
+jobs:
+  Publish:
+    name: Deploy
+    runs-on: ubuntu-latest
+    
+    permissions:
+      contents: write
+    
+    steps:
+      # Checkout this repository under $GITHUB_WORKSPACE/repo, so the job can access it
+      - name: Checkout repo
+        uses: actions/checkout@v4
+        with:
+          path: repo
+          lfs: true
+          fetch-depth: 0
+
+      - name: Get gem name and version 
+        id: vars
+        run: |
+          # assumes gem.json in root
+          content=`cat ./repo/gem.json`
+          # the following lines are only required for multi line json
+          content="${content//'%'/'%25'}"
+          content="${content//$'\n'/'%0A'}"
+          content="${content//$'\r'/'%0D'}"
+          # end of optional handling for multi line json
+          echo "::set-output name=version::fromJson($content).version"
+          echo "::set-output name=name::fromJson($content).name"
+
+
+      # pull LFS files maybe not needed if lfs:true works above
+      #- name: Git LFS pull
+      #  run: |
+      #    git -C repo lfs install
+      #    git -C repo lfs fetch repo
+
+      # Checkout the o3de repository under $GITHUB_WORKSPACE/repo, so the job can access it
+      # use sparse checkout to only get a few folders
+      - name: Checkout o3de
+        uses: actions/checkout@v4
+        with:
+          path: o3de
+          repository: o3de/o3de
+          ref: main
+          lfs: false
+          fetch-depth: 0
+          sparse-checkout: |
+            cmake
+            python 
+            scripts
+      
+      - name: Install Python
+        run: |
+          o3de/python/get_python.sh
+
+      - name: Update repo.json
+        id: archive
+        run: |
+          o3de/scripts/o3de.sh edit-repo-properties --repo-path $GITHUB_WORKSPACE/repo --add-gem repo --release-archive-path artifacts --download-prefix ${{github.server_url}}/${{github.repository}}/releases/download/${{steps.vars.outputs.version}}
+
+      - name: Commit repo.json Changes
+        run: |
+          git -C repo config --global user.name 'github-actions'
+          git -C repo config --global user.email 'github-actions@users.noreply.github.com'
+          git -C repo add gem.json repo.json
+          git -C repo commit -am "Update gem.json repo.json"
+          git -C tag ${{steps.vars.outputs.verison}}
+          git -C repo push origin ${{steps.vars.outputs.version}}
+          
+      # Creates a release tag based on inputs
+      - name: Create Release
+        id: create_release
+        uses: ncipollo/release-action@v1.11.1
+        with:
+          name: ${{ steps.vars.outputs.version }}
+          tag: ${{ steps.vars.outputs.version }}
+          body: |
+            ## Release Notes
+            ${{steps.vars.outputs.name}} ${{steps.vars.outputs.version}}
+          draft: false
+          prerelease: false
+          artifacts: "artifacts/.*"
