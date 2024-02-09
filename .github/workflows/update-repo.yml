@@ -34,19 +34,18 @@ jobs:
         id: gem_json 
         run: |
           # assumes gem.json in root
-          content=`cat ./repo/gem.json`
-          # the following lines are only required for multi line json
-          content="${content//'%'/'%25'}"
-          content="${content//$'\n'/'%0A'}"
-          content="${content//$'\r'/'%0D'}"
-          # end of optional handling for multi line json
-          echo "::set-output name=content::fromJson($content)}}"
+          echo "content<<EOF" >> $GITHUB_OUTPUT
+          cat ${{github.workspace}}/repo/gem.json >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
 
       - name: Get gem name and version 
         id: vars
         run: |
-          echo "::set-output name=version::${{steps.gem_json.output.content.version}}"
-          echo "::set-output name=name::${{steps.gem_json.output.content.gem_name}}"
+          echo content: ${{fromJson(steps.gem_json.output.content)}}
+          echo version: ${{fromJson(steps.gem_json.output.content).version}}
+          echo name: ${{fromJson(steps.gem_json.output.content).gem_name}}
+          echo "version=${{fromJson(steps.gem_json.output.content).version}}" >> $GITHUB_OUTPUT
+          echo "name=${{fromJson(steps.gem_json.output.content).gem_name}}" >> $GITHUB_OUTPUT
 
 
       # pull LFS files maybe not needed if lfs:true works above
@@ -78,7 +77,7 @@ jobs:
       - name: Create repo.json if needed
         run: |
           if ! test -f ${{github.workspace}}/repo/repo.json; then
-            o3de/scripts/o3de.sh create-repo --repo-path ${{github.workspace}}/repo --repo-uri ${{github.server_url}}/${{github.repository}}.git --repo-name "${{steps.vars.outputs.name}} Remote Repository" --summary "Remote repository for ${{steps.vars.outputs.name}}, an O3DE Gem." --origin ${{github.owner}}  --origin-url ${{github.server_url}}/${{github.repository}}
+            o3de/scripts/o3de.sh create-repo --repo-path ${{github.workspace}}/repo --repo-uri ${{github.server_url}}/${{github.repository}}.git --repo-name "${{steps.vars.outputs.name}} Remote Repository" --summary "Remote repository for ${{steps.vars.outputs.name}}, an O3DE Gem." --origin ${{github.repository_owner}}  --origin-url ${{github.server_url}}/${{github.repository}}
           fi
       - name: Update repo.json
         id: archive
