@@ -69,11 +69,17 @@ jobs:
             cmake
             python 
             scripts
+            Templates
       
       - name: Install Python
         run: |
           o3de/python/get_python.sh
 
+      - name: Create repo.json if needed
+        run: |
+          if ! test -f ${{github.workspace}}/repo/repo.json; then
+            o3de/scripts/o3de.sh create-repo --repo-path ${{github.workspace}}/repo --repo-uri ${{github.server_url}}/${{github.repository}}.git --repo-name "${{steps.vars.outputs.name}} Remote Repository" --summary "Remote repository for ${{steps.vars.outputs.name}}, an O3DE Gem." --origin ${{github.owner}}  --origin-url ${{github.server_url}}/${{github.repository}}
+          fi
       - name: Update repo.json
         id: archive
         run: |
