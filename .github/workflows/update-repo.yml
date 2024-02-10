@@ -102,11 +102,11 @@ jobs:
         id: create_release
         uses: ncipollo/release-action@v1.11.1
         with:
-          name: ${{ steps.vars.outputs.version }}
-          tag: ${{ steps.vars.outputs.version }}
+          name: ${{ steps.info.outputs.version }}
+          tag: ${{ steps.info.outputs.version }}
           body: |
             ## Release Notes
-            ${{steps.vars.outputs.name}} ${{steps.vars.outputs.version}}
+            ${{steps.info.outputs.name}} ${{steps.info.outputs.version}}
           draft: false
           prerelease: false
           artifacts: "artifacts/.*"
