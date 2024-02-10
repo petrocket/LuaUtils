@@ -31,28 +31,25 @@ jobs:
           fetch-depth: 0
 
       - name: Read gem.json
-        id: gem_json 
+        id: gem-json 
         run: |
-          # assumes gem.json in root
-          echo "content<<EOF" >> $GITHUB_OUTPUT
-          cat ${{github.workspace}}/repo/gem.json >> $GITHUB_OUTPUT
-          echo "EOF" >> $GITHUB_OUTPUT
+          {
+            echo 'CONTENT<<EOF'
+            cat ${{github.workspace}}/repo/gem.json
+            echo EOF
+          } >> "$GITHUB_OUTPUT"
 
-      - name: Get gem name and version 
-        id: vars
+      - name: Get gem info
+        id: info
+        env:
+          GEM_NAME: ${{ fromJson( steps.gem-json.outputs.CONTENT ).gem_name }}
+          GEM_VERSION: ${{ fromJson( steps.gem-json.outputs.CONTENT ).version }}
         run: |
-          echo content: ${{fromJson(steps.gem_json.output.content)}}
-          echo version: ${{fromJson(steps.gem_json.output.content).version}}
-          echo name: ${{fromJson(steps.gem_json.output.content).gem_name}}
-          echo "version=${{fromJson(steps.gem_json.output.content).version}}" >> $GITHUB_OUTPUT
-          echo "name=${{fromJson(steps.gem_json.output.content).gem_name}}" >> $GITHUB_OUTPUT
-
-
-      # pull LFS files maybe not needed if lfs:true works above
-      #- name: Git LFS pull
-      #  run: |
-      #    git -C repo lfs install
-      #    git -C repo lfs fetch repo
+          echo TEST
+          echo $GEM_NAME
+          echo $GEM_VERSION
+          echo "version=$GEM_VERSION" >> "$GITHUB_OUTPUT"
+          echo "name=$GEM_NAME" >> "$GITHUB_OUTPUT"
 
       # Checkout the o3de repository under $GITHUB_WORKSPACE/repo, so the job can access it
       # use sparse checkout to only get a few folders
@@ -77,12 +74,13 @@ jobs:
       - name: Create repo.json if needed
         run: |
           if ! test -f ${{github.workspace}}/repo/repo.json; then
-            o3de/scripts/o3de.sh create-repo --repo-path ${{github.workspace}}/repo --repo-uri ${{github.server_url}}/${{github.repository}}.git --repo-name "${{steps.vars.outputs.name}} Remote Repository" --summary "Remote repository for ${{steps.vars.outputs.name}}, an O3DE Gem." --origin ${{github.repository_owner}}  --origin-url ${{github.server_url}}/${{github.repository}}
+            o3de/scripts/o3de.sh create-repo --repo-path ${{github.workspace}}/repo --repo-uri ${{github.server_url}}/${{github.repository}}.git --repo-name '${{steps.info.outputs.name}} Remote Repository' --summary 'Remote repository for ${{steps.info.outputs.name}}, an O3DE Gem.' --origin ${{github.repository_owner}}  --origin-url ${{github.server_url}}/${{github.repository}}
           fi
+
       - name: Update repo.json
         id: archive
         run: |
-          o3de/scripts/o3de.sh edit-repo-properties --repo-path ${{github.workspace}}/repo --add-gem ${{github.workspace}}/repo --release-archive-path artifacts --download-prefix ${{github.server_url}}/${{github.repository}}/releases/download/${{steps.vars.outputs.version}}
+          o3de/scripts/o3de.sh edit-repo-properties --repo-path ${{github.workspace}}/repo --add-gem ${{github.workspace}}/repo --release-archive-path artifacts --download-prefix ${{github.server_url}}/${{github.repository}}/releases/download/${{steps.info.outputs.version}}
 
       - name: Commit repo.json Changes
         run: |
@@ -90,8 +88,8 @@ jobs:
           git -C repo config --global user.email 'github-actions@users.noreply.github.com'
           git -C repo add gem.json repo.json
           git -C repo commit -am "Update gem.json repo.json"
-          git -C tag ${{steps.vars.outputs.verison}}
-          git -C repo push origin ${{steps.vars.outputs.version}}
+          git -C tag ${{steps.info.outputs.version}}
+          git -C repo push origin ${{steps.info.outputs.version}}
           
       # Creates a release tag based on inputs
       - name: Create Release
