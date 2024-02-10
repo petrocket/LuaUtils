@@ -68,8 +68,14 @@ jobs:
             Templates
       
       - name: Install Python
+        working-directory: o3de
         run: |
-          o3de/python/get_python.sh
+          python/get_python.sh
+
+      - name: Register engine
+        working-directory: o3de
+        run: |
+          scripts/o3de.sh register --this-engine
 
       - name: Create repo.json if needed
         run: |
@@ -82,17 +88,17 @@ jobs:
         run: |
           o3de/scripts/o3de.sh edit-repo-properties --repo-path ${{github.workspace}}/repo --add-gem ${{github.workspace}}/repo --release-archive-path artifacts --download-prefix ${{github.server_url}}/${{github.repository}}/releases/download/${{steps.info.outputs.version}}
 
-      - name: Commit repo.json Changes
+      - name: Commit repo.json changes
         run: |
           git -C repo config --global user.name 'github-actions'
           git -C repo config --global user.email 'github-actions@users.noreply.github.com'
           git -C repo add gem.json repo.json
           git -C repo commit -am "Update gem.json repo.json"
-          git -C tag ${{steps.info.outputs.version}}
+          git -C repo tag ${{steps.info.outputs.version}}
           git -C repo push origin ${{steps.info.outputs.version}}
           
       # Creates a release tag based on inputs
-      - name: Create Release
+      - name: Create release
         id: create_release
         uses: ncipollo/release-action@v1.11.1
         with:
