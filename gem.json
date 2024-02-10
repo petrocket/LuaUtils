@@ -26,8 +26,9 @@
     "requirements": "",
     "documentation_url": "https://github.com/petrocket/luautils",
     "dependencies": [],
-    "repo_uri": "https://github.com/petrocket/luautils",
+    "repo_uri": "https://github.com/petrocket/LuaUtils.git",
     "compatible_engines": [],
     "engine_api_dependencies": [],
-    "restricted": "LuaUtils"
+    "restricted": "LuaUtils",
+    "download_source_uri": "https://github.com/petrocket/LuaUtils/releases/download/1.0.0/luautils-1.0.0-gem.zip"
 }
