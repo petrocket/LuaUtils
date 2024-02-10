@@ -74,7 +74,7 @@ jobs:
       - name: Create repo.json if needed
         run: |
           if ! test -f ${{github.workspace}}/repo/repo.json; then
-            o3de/scripts/o3de.sh create-repo --repo-path ${{github.workspace}}/repo --repo-uri ${{github.server_url}}/${{github.repository}}.git --repo-name '${{steps.info.outputs.name}} Remote Repository' --summary 'Remote repository for ${{steps.info.outputs.name}}, an O3DE Gem.' --origin ${{github.repository_owner}}  --origin-url ${{github.server_url}}/${{github.repository}}
+            o3de/scripts/o3de.sh create-repo --repo-path ${{github.workspace}}/repo --repo-uri ${{github.server_url}}/${{github.repository}}.git --origin ${{github.repository_owner}}  --origin-url ${{github.server_url}}/${{github.repository}}
           fi
 
       - name: Update repo.json
