@@ -41,7 +41,7 @@
             "engine_api_dependencies": [],
             "restricted": "LuaUtils",
             "download_source_uri": "https://github.com/petrocket/LuaUtils/releases/download/1.0.0/luautils-1.0.0-gem.zip",
-            "sha256": "5948e57ee9ec6868592677174cc22101ac266ed7ae3a05d5acc541be495610dc"
+            "sha256": "b5a189f63cde2c9a93f38a7432bad9c72e145265572d4b2d1dc23ad10a38bd2e"
         }
     ],
     "projects_data": [],
