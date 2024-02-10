@@ -28,7 +28,6 @@ jobs:
         with:
           path: repo
           lfs: true
-          fetch-depth: 0
 
       - name: Read gem.json
         id: gem-json 
@@ -86,17 +85,18 @@ jobs:
       - name: Update repo.json
         id: archive
         run: |
-          o3de/scripts/o3de.sh edit-repo-properties --repo-path ${{github.workspace}}/repo --add-gem ${{github.workspace}}/repo --release-archive-path artifacts --download-prefix ${{github.server_url}}/${{github.repository}}/releases/download/${{steps.info.outputs.version}}
+          mkdir ${{github.workspace}}/artifacts
+          o3de/scripts/o3de.sh edit-repo-properties --repo-path ${{github.workspace}}/repo --add-gem ${{github.workspace}}/repo --release-archive-path ${{github.workspace}}/artifacts --download-prefix ${{github.server_url}}/${{github.repository}}/releases/download/${{steps.info.outputs.version}}
 
       - name: Commit repo.json changes
         run: |
           git -C repo config --global user.name 'github-actions'
           git -C repo config --global user.email 'github-actions@users.noreply.github.com'
-          git -C repo add gem.json repo.json
-          git -C repo commit -am "Update gem.json repo.json"
-          git -C repo tag -d ${{steps.info.outputs.version}}
+          git -C repo tag -d ${{steps.info.outputs.version}} || true
+          git -C repo add -A
+          git -C repo commit -m "Update gem.json repo.json" --allow-empty
           git -C repo tag ${{steps.info.outputs.version}}
-          git -C repo push --force origin ${{steps.info.outputs.version}}
+          git -C repo push --force -u origin ${{steps.info.outputs.version}}
           
       # Creates a release tag based on inputs
       - name: Create release
@@ -105,9 +105,10 @@ jobs:
         with:
           name: ${{ steps.info.outputs.version }}
           tag: ${{ steps.info.outputs.version }}
+          allowUpdates: true
           body: |
             ## Release Notes
             ${{steps.info.outputs.name}} ${{steps.info.outputs.version}}
           draft: false
           prerelease: false
-          artifacts: "artifacts/.*"
+          artifacts: "${{github.workspace}}/artifacts/.*"
