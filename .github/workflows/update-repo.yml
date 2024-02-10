@@ -94,8 +94,9 @@ jobs:
           git -C repo config --global user.email 'github-actions@users.noreply.github.com'
           git -C repo add gem.json repo.json
           git -C repo commit -am "Update gem.json repo.json"
+          git -C repo tag -d ${{steps.info.outputs.version}}
           git -C repo tag ${{steps.info.outputs.version}}
-          git -C repo push origin ${{steps.info.outputs.version}}
+          git -C repo push --force origin ${{steps.info.outputs.version}}
           
       # Creates a release tag based on inputs
       - name: Create release
