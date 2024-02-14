@@ -8,6 +8,7 @@ local PlayerController = {
 		SideSpeedFactor = 0.5,
 		BackSpeedFactor = 0.25,
 		Camera = EntityId(),
+		Pawn = EntityId(),
 		Mesh = EntityId(),
 		Audio = EntityId(),
 		PrimaryActionTarget = { default=EntityId(), description="Entity to notify for the player's primary action"},
@@ -15,7 +16,14 @@ local PlayerController = {
 		SecondaryActionTarget = { default=EntityId(), description="Entity to notify for the player's secondary action"},
 		SecondaryActionCooldown = { default=0.3, suffix="sec", description="Optional secondary action cooldown in seconds"},
         Enabled = { default=true, description="Whether the player starts enabled or not."},
-		Invincible=false
+		Invincible=false,
+		AnimationParameters={
+			Movement="movement",
+			Attacking="attack",
+			Dead="dead",
+			OpenChest="open_chest",
+			OpenDoor="open_door"
+		}
     },
     InputEvents = {
         MoveLeftRight = {},
@@ -30,7 +38,14 @@ local PlayerController = {
         LookUpDown = {},
         GamePadUsed = {},
         MouseUsed = {}
-    }
+    },
+	AnimationIndexes = {
+		Attacking=-1,
+		Dead=-1,
+		Movement=-1,
+		OpenChest=-1,
+		OpenDoor=-1
+	}
 }
 
 function PlayerController:OnActivate()
@@ -50,10 +65,15 @@ function PlayerController:OnActivate()
 
 	Events:Connect(self, Events.OnStateChange)
 	Events:Connect(self, Events.GetPlayer)
-	Events:Connect(self, Events.OnResourceChangedHealth, self.Properties.Mesh)
+	Events:Connect(self, Events.OnResourceChangedHealth, self.Properties.Pawn)
 
     Utilities:ExecuteOnNextTick(self, function(self)
-		self.spawnTM = TransformBus.Event.GetWorldTM(self.Properties.Mesh)
+		self.spawnTM = TransformBus.Event.GetWorldTM(self.Properties.Pawn)
+		self.AnimationIndexes.Attacking = AnimGraphComponentRequestBus.Event.FindParameterIndex(self.Properties.Mesh, self.Properties.AnimationParameters.Attacking)
+		self.AnimationIndexes.Dead = AnimGraphComponentRequestBus.Event.FindParameterIndex(self.Properties.Mesh, self.Properties.AnimationParameters.Dead)
+		self.AnimationIndexes.Movement = AnimGraphComponentRequestBus.Event.FindParameterIndex(self.Properties.Mesh, self.Properties.AnimationParameters.Movement)
+		self.AnimationIndexes.OpenChest = AnimGraphComponentRequestBus.Event.FindParameterIndex(self.Properties.Mesh, self.Properties.AnimationParameters.OpenChest)
+		self.AnimationIndexes.OpenDoor = AnimGraphComponentRequestBus.Event.FindParameterIndex(self.Properties.Mesh, self.Properties.AnimationParameters.OpenDoor)
 	end)
 end
 
@@ -64,14 +84,17 @@ end
 function PlayerController:OnResourceChangedHealth(oldAmount, newAmount)
 	if newAmount == 0 and not self.Properties.Invincible then
 		self.alive = false
+		AnimGraphComponentRequestBus.Event.SetParameterBool(self.Properties.Mesh, self.AnimationIndexes.Dead, true)
 		self:SetEnabled(false)
+	else
+		AnimGraphComponentRequestBus.Event.SetParameterBool(self.Properties.Mesh, self.AnimationIndexes.Dead, false)
 	end	
 end
 
 function PlayerController:Reset()
 	TransformBus.Event.SetWorldTM(self.entityId, self.cameraSpawnTM)
 	if self.spawnTM ~= nil then
-		TransformBus.Event.SetWorldTM(self.Properties.Mesh, self.spawnTM)
+		TransformBus.Event.SetWorldTM(self.Properties.Pawn, self.spawnTM)
 	end
 
 	AudioTriggerComponentRequestBus.Event.KillAllTriggers(self.Properties.Audio)
@@ -101,9 +124,9 @@ end
 function PlayerController:OnStateChange(value)
     if value == 'Reset' then
 		-- we really need to disable the physics before teleporting
-		SimulatedBodyComponentRequestBus.Event.DisablePhysics(self.Properties.Mesh)
+		SimulatedBodyComponentRequestBus.Event.DisablePhysics(self.Properties.Pawn)
         self:Reset()
-		SimulatedBodyComponentRequestBus.Event.EnablePhysics(self.Properties.Mesh)
+		SimulatedBodyComponentRequestBus.Event.EnablePhysics(self.Properties.Pawn)
     end
 	self:SetEnabled(value == 'InGame')
 end
@@ -117,8 +140,9 @@ function PlayerController:OnTick(deltaTime, scriptTime)
 	if self.primaryAction ~= 0 then
 		if self.nextPrimaryActionTime < scriptTime:GetSeconds() then
 			self.nextPrimaryActionTime = scriptTime:GetSeconds() + self.Properties.PrimaryActionCooldown
-			self:Log("PrimaryAction")
+			--self:Log("PrimaryAction")
 			Events:SendTo(Events.OnAction, self.Properties.PrimaryActionTarget)
+			AnimGraphComponentRequestBus.Event.SetParameterBool(self.Properties.Mesh, self.AnimationIndexes.Attacking, true)
 		end
         self.primaryAction = 0
 	end
@@ -126,7 +150,7 @@ function PlayerController:OnTick(deltaTime, scriptTime)
 	if self.secondaryAction ~= 0 then
 		if self.nextSecondaryActionTime < scriptTime:GetSeconds() then
 			self.nextSecondaryActionTime = scriptTime:GetSeconds() + self.Properties.SecondaryActionCooldown
-			self:Log("SecondaryAction")
+			--self:Log("SecondaryAction")
 			Events:SendTo(Events.OnAction, self.Properties.SecondaryActionTarget)
 		end
 		self.secondaryAction = 0
@@ -139,7 +163,7 @@ function PlayerController:OnTick(deltaTime, scriptTime)
 	local moveDirection = Vector3(self.movement.x, self.movement.y, 0):GetNormalized()
 	local moveAmount = moveDirection * self.Properties.MoveSpeed * deltaTime
 	local cameraTranslation = TransformBus.Event.GetWorldTranslation(self.Properties.Camera)
-	local meshTranslation = TransformBus.Event.GetWorldTranslation(self.Properties.Mesh)
+	local meshTranslation = TransformBus.Event.GetWorldTranslation(self.Properties.Pawn)
 
 	if self.offset.z == 0 then
 		self.offset = cameraTranslation - meshTranslation
@@ -161,11 +185,13 @@ function PlayerController:OnTick(deltaTime, scriptTime)
 
 	local rotation = Math.ArcTan2(deltaPos.y, deltaPos.x)
 	local worldRotation = Vector3(0,0,rotation - math.pi * 0.5)
-	TransformBus.Event.SetWorldRotation(self.Properties.Mesh, worldRotation)
+	TransformBus.Event.SetWorldRotation(self.Properties.Pawn, worldRotation)
 
 	-- move at different speeds
 	if(moveAmount:GetLengthSq() > 0.1) then
-		local dot = deltaPos:GetNormalized():Dot(Vector3(moveAmount.x,moveAmount.y,0):GetNormalized())
+		local moveDirection = Vector3(moveAmount.x,moveAmount.y,0):GetNormalized()
+		local facingDirection = deltaPos:GetNormalized()
+		local dot = facingDirection:Dot(moveDirection)
 
 		if(dot < -0.1) then
 			moveAmount = moveAmount * self.Properties.BackSpeedFactor
@@ -173,10 +199,19 @@ function PlayerController:OnTick(deltaTime, scriptTime)
 			moveAmount = moveAmount * self.Properties.SideSpeedFactor
 		end
 		self:PlayFootstep(moveAmount:GetLength(), scriptTime:GetSeconds())
-		CharacterControllerRequestBus.Event.AddVelocityForTick(self.Properties.Mesh, moveAmount)
-		local meshTranslation = TransformBus.Event.GetWorldTranslation(self.Properties.Mesh)
+		CharacterControllerRequestBus.Event.AddVelocityForTick(self.Properties.Pawn, moveAmount)
+		local meshTranslation = TransformBus.Event.GetWorldTranslation(self.Properties.Pawn)
 		local cameraTranslation = meshTranslation + self.offset
 		TransformBus.Event.SetWorldTranslation(self.Properties.Camera, cameraTranslation)
+
+		local forwardBack = facingDirection:Dot(Vector3(moveAmount.x, moveAmount.y,0))
+		local basisX = facingDirection:Cross(Vector3(0.0, 0.0, 1.0))
+		local leftRight = basisX:Dot(Vector3(moveAmount.x, moveAmount.y,0))
+		local animMovement = Vector2(leftRight, forwardBack)
+		self:Log("x: "..tostring(leftRight) .. " y: "..tostring(forwardBack))
+		AnimGraphComponentRequestBus.Event.SetParameterVector2(self.Properties.Mesh, self.AnimationIndexes.Movement, animMovement)
+	else
+		AnimGraphComponentRequestBus.Event.SetParameterVector2(self.Properties.Mesh, self.AnimationIndexes.Movement, Vector2(0.0, 0.0))
 	end
 end
 
